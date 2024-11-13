@@ -1,30 +1,54 @@
 import { useState } from 'react'
 import { FiSearch } from 'react-icons/fi'
 import './Styles.css'
+import './services/api.jsx'
+import api from './services/api.jsx';
 
 function App() {
 
   const [input, setInput] = useState('');
+  const [cep, setCep] = useState('');
+  const [isWrongCep, setIsWrongCep] = useState(false);
 
-  function HandleSearch() {
-    alert("Valor do input: " + input);
+  async function HandleSearch() {
+    if (input === "")
+    {
+      alert("Preencha algum CEP.")
+      return;
+    }
+    let isWrongCep;
+    try
+    {
+      const response = await api.get(`${input}/json`);
+      setCep(response.data);
+      setInput('');
+      setIsWrongCep(true);
+    } 
+    catch
+    {
+      alert("erro ao buscar");
+      setIsWrongCep(false);
+      setCep({});
+    }
   }
 
   return(
     <div className="container">
-      <h1 className="title">Search CEP</h1>
+      <h1 className="title">Buscar CEP</h1>
       <div className="containerInput">
-        <input type="text" placeholder="Type the CEP" value={input} onChange={(e) => setInput(e.target.value)}/>
+        <input type="text" placeholder="Coloque o CEP" value={input} onChange={(e) => setInput(e.target.value)}/>
         <button type="button" className="buttonSearch" onClick={HandleSearch}><FiSearch size={25} color="black"/></button>
       </div>
-      <main className="main">
-        <h2>091284098</h2>
+      {Object.keys(cep).length > 0 && isWrongCep && (
+        <main className="main">
+          <h2>{cep.cep}</h2>
 
-        <span>Logradouro: </span>
-        <span>Complemento: </span>
-        <span>Bairro: </span>
-        <span>São Paulo - SP</span>
-      </main>
+          <span>{"Logradouro: "+cep.logradouro} </span>
+          <span>{"Complemento: "+cep.complemento} </span>
+          <span>{"Bairro: "+cep.bairro} </span>
+          <span>{cep.localidade+' - '+cep.uf}</span>
+        </main>
+      )}
     </div>
   );
 }
