@@ -1,7 +1,7 @@
-import React from 'react'
+import { useState } from 'react'
 import { FiSearch } from 'react-icons/fi'
 import './Styles.css'
-import './services/api.jsx'
+// import './services/api.jsx'
 import api from './services/api.jsx';
 
 function App() {
